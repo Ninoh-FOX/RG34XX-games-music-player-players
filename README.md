@@ -61,4 +61,6 @@ support the following formats and systems:
 
 #INSTALLATION AND USAGE (in stock)
 
-Copy the EXE file in the root of SDCARD and load this from App center -> Expert -> sdcard -> EXE -> gme or playgsf folder -> gme_player or selector_playgsf
+- Copy the files from linuxrootfs in linuxrootfs sdcard system partition.
+
+- Copy the EXE file in the root of SDCARD and load this from App center -> Expert -> sdcard -> EXE -> gme or playgsf folder -> gme_player or selector_playgsf
