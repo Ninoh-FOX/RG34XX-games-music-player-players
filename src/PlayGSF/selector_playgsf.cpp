@@ -84,7 +84,7 @@ static int battery = 0; // battery percentage from /sys/class/power_supply/batte
 static Uint32 last_battery_update = 0;
 static const Uint32 battery_update_interval = 1000; // 1 second in ms
 
-static int last_brightness = 72;
+static int last_brightness = 50;
 
 std::string state_file_path() {
     std::string dir = "/.config/playgsf";
@@ -96,26 +96,39 @@ void hw_display_off(void);
 void hw_display_on(void);
 
 int get_brightness() {
-    int val = 72; // default si falla
+    int val = -1;
     int fd = open("/dev/disp", O_RDWR);
     if (fd >= 0) {
         unsigned long param[4] = {0UL, 0UL, 0UL, 0UL};
-        if (ioctl(fd, DISP_LCD_GET_BRIGHTNESS, &param) != -1) {
+        if (ioctl(fd, DISP_LCD_GET_BRIGHTNESS, param) != -1) {
             val = (int)param[1];
         }
         close(fd);
     }
-    
-    if (val <= 0) 
-        val=72;
 
+    if (val <= 0) {
+        FILE* fp = fopen("/.config/.keymon_brightness", "r");
+        if (fp) {
+            int level = 3;
+            int brightness_map[8] = {5, 10, 20, 50, 70, 140, 200, 255};
+            if (fscanf(fp, "%d", &level) == 1) {
+                if (level < 0) level = 0;
+                if (level > 7) level = 7;
+                val = brightness_map[level];
+            }
+            fclose(fp);
+        } else {
+            val = 50;
+        }
+    }
     return val;
 }
+
 
 void set_brightness(int val) {
     int fd = open("/dev/disp", O_RDWR);
     if (fd >= 0) {
-        unsigned long param[4] = {0, val, 0, 0};
+        unsigned long param[4] = {0, (unsigned long)val, 0, 0};
         ioctl(fd, DISP_LCD_SET_BRIGHTNESS, &param);
         close(fd);
     }
