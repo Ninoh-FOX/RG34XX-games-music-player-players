@@ -17,6 +17,7 @@ PIDFILE=/var/run/$NAME.pid
 
 start() {
     log_daemon_msg "Starting $NAME"
+    ldconfig
     if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
         log_progress_msg "$NAME is already running"
         log_end_msg 0
